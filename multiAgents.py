@@ -27,7 +27,7 @@ class ReflexAgent(Agent):
     it in any way you see fit, so long as you don't touch our method
     headers.
     """
-bfvbjwhebfekfbk
+
 
     def getAction(self, gameState):
         """
@@ -72,11 +72,45 @@ bfvbjwhebfekfbk
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-        print("newGhostStates ", newGhostStates)
 
+        smallestDistance = float('-inf')
+        currFood = currentGameState.getFood()
+        foodList = currFood.asList()
+        for food in foodList:
+            distance = -(manhattanDistance(food, newPos))
+            if action == 'Stop':
+                distance = float('-inf')
+            if distance > smallestDistance:
+                smallestDistance = distance
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        for ghost in newGhostStates:
+            ghostPos = ghost.getPosition()
+            safetySpace = manhattanDistance(ghostPos, newPos)
+            if safetySpace < 1:
+                 smallestDistance = float('-inf')
+
+        return smallestDistance
+
+        """score = successorGameState.getScore()
+        foodArray = newFood.asList()
+
+        # Taking reciprocal since closer the food higher should be the score returned
+
+        for i in foodArray:
+            foodDist = util.manhattanDistance(i, newPos)
+            if (foodDist) != 0:
+                score = score + (1.0 / foodDist)
+
+        # Taking reciprocal since the score returned with respect to ghost is negative, closer the ghost higher should be the score 		in negative
+
+        for ghost in newGhostStates:
+            ghostpos = ghost.getPosition()
+            ghostDist = util.manhattanDistance(ghostpos, newPos)
+            if (abs(newPos[0] - ghostpos[0]) + abs(newPos[1] - ghostpos[1])) > 1:
+                score = score + (1.0 / ghostDist)
+
+        return score"""
+
 
 def scoreEvaluationFunction(currentGameState):
     """
