@@ -171,7 +171,40 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        action, score = self.miniMax(gameState, 0, 0)
+        return action
+
+        #util.raiseNotDefined()
+
+    def miniMax(self, state, depth, agent):
+
+        if agent >= state.getNumAgents():
+            agent = 0
+            depth = depth + 1
+
+        if depth == self.depth or state.isWin() or state.isLose():
+            return None, self.evaluationFunction(state)
+
+        if agent == 0:
+            maxValue = float('-inf')
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                score = self.miniMax(successorState, depth, agent + 1)
+                if score[1] > maxValue:
+                    maxValue = score[1]
+                    goTo = action
+            return goTo, maxValue
+        else:
+            minValue = float('inf')
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                score = self.miniMax(successorState, depth, agent + 1)
+                if score[1] < minValue:
+                    minValue = score[1]
+                    goTo = action
+            return goTo, minValue
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -183,7 +216,52 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        action, score = self.miniMaxAB(gameState, 0, 0, float('-inf'), float('inf'))
+        return action
+
+
+
+
+
+        #util.raiseNotDefined()
+
+    def miniMaxAB(self, state, depth, agent, alpha, beta):
+        if agent >= state.getNumAgents():
+            agent = 0
+            depth = depth + 1
+
+        if depth == self.depth or state.isWin() or state.isLose():
+            return None, self.evaluationFunction(state)
+
+        if agent == 0:
+            maxValue = float('-inf')
+
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                score = self.miniMaxAB(successorState, depth, agent + 1, alpha, beta)
+
+                if score[1] > maxValue:
+                    maxValue = score[1]
+                    goTo = action
+                if maxValue > beta:
+                    return goTo, maxValue
+                alpha = max(alpha,maxValue)
+            return goTo, maxValue
+        else:
+            minValue = float('inf')
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                score = self.miniMaxAB(successorState, depth, agent + 1, alpha, beta)
+
+                if score[1] < minValue:
+                    minValue = score[1]
+                    goTo = action
+                if minValue < alpha:
+                    return goTo, minValue
+                beta = min(beta,minValue)
+            return goTo, minValue
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -198,7 +276,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+
+
+        #util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
     """
