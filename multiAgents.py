@@ -73,13 +73,13 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-        smallestDistance = float('-inf')
+        smallestDistance = -100000000
         currFood = currentGameState.getFood()
         foodList = currFood.asList()
         for food in foodList:
             distance = -(manhattanDistance(food, newPos))
             if action == 'Stop':
-                distance = float('-inf')
+                distance = -1000000000
             if distance > smallestDistance:
                 smallestDistance = distance
 
@@ -87,7 +87,7 @@ class ReflexAgent(Agent):
             ghostPos = ghost.getPosition()
             safetySpace = manhattanDistance(ghostPos, newPos)
             if safetySpace < 1:
-                 smallestDistance = float('-inf')
+                 smallestDistance = -10000000000
 
         return smallestDistance
 
@@ -235,7 +235,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return None, self.evaluationFunction(state)
 
         if agent == 0:
-            maxValue = float('-inf')
+            maxValue = -1000000000
 
             for action in state.getLegalActions(agent):
                 successorState = state.generateSuccessor(agent, action)
@@ -246,10 +246,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     goTo = action
                 if maxValue > beta:
                     return goTo, maxValue
-                alpha = max(alpha,maxValue)
+                alpha = max(alpha, maxValue)
             return goTo, maxValue
         else:
-            minValue = float('inf')
+            minValue = 100000000
             for action in state.getLegalActions(agent):
                 successorState = state.generateSuccessor(agent, action)
                 score = self.miniMaxAB(successorState, depth, agent + 1, alpha, beta)
@@ -259,7 +259,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     goTo = action
                 if minValue < alpha:
                     return goTo, minValue
-                beta = min(beta,minValue)
+                beta = min(beta, minValue)
             return goTo, minValue
 
 
@@ -277,6 +277,40 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
+        action, score = self.expectiMax(gameState, 0, 0)
+        return action
+
+        # util.raiseNotDefined()
+
+    def expectiMax(self, state, depth, agent):
+
+        if agent >= state.getNumAgents():
+            agent = 0
+            depth = depth + 1
+
+        if depth == self.depth or state.isWin() or state.isLose():
+            return None, self.evaluationFunction(state)
+
+        if agent == 0:
+            maxValue = float('-inf')
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                score = self.expectiMax(successorState, depth, agent + 1)
+                if score[1] > maxValue:
+                    maxValue = score[1]
+                    goTo = action
+            return goTo, maxValue
+        else:
+            minValue = 0.0
+            #prob = 1.0 / len(state.getLegalActions(agent))
+            numActions = len(state.getLegalActions(agent))
+            for action in state.getLegalActions(agent):
+                successorState = state.generateSuccessor(agent, action)
+                _, score = self.expectiMax(successorState, depth, agent + 1)
+                #if score[1] < minValue:
+                minValue += score / numActions
+                goTo = action
+            return goTo, minValue
 
 
         #util.raiseNotDefined()
